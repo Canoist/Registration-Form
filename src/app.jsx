@@ -7,6 +7,8 @@ import {
   Checkbox,
   FormControlLabel,
   Link,
+  FormControl,
+  FormHelperText,
 } from "@mui/material";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -31,6 +33,7 @@ const App = () => {
     console.log("SUBMIT", data);
     localStorage.setItem("user", JSON.stringify(data));
   };
+
   console.log("ERRORS: ", errors);
 
   const handleClickOnLink = (event) => {
@@ -102,26 +105,38 @@ const App = () => {
         Become a farmland investor
       </h4>
       <TextField
+        error={errors["First name"]}
         id="First Name"
         label="First Name"
         variant="standard"
         margin="normal"
-        {...register("First name", { required: true, maxLength: 80 })}
+        helperText={errors["First name"] ? errors["First name"].message : null}
+        {...register("First name", {
+          required: { value: true, message: "Поле обязательно для заполнения" },
+          maxLength: 80,
+        })}
       />
       <TextField
+        error={errors["Last name"]}
+        helperText={errors["Last name"] ? errors["Last name"].message : null}
         id="Last Name"
         label="Last Name"
         variant="standard"
         margin="normal"
-        {...register("Last name", { required: true, maxLength: 100 })}
+        {...register("Last name", {
+          required: { value: true, message: "Поле обязательно для заполнения" },
+          maxLength: 100,
+        })}
       />
       <TextField
+        error={errors.Password}
+        helperText={errors.Password ? errors.Password.message : null}
         id="Password"
         label="Password"
         variant="standard"
         margin="normal"
         {...register("Password", {
-          required: true,
+          required: { value: true, message: "Поле обязательно для заполнения" },
           minLength: 7,
           pattern: /\d+/g,
         })}
@@ -140,14 +155,25 @@ const App = () => {
         }}
       />
       <TextField
+        error={errors.Email}
+        helperText={errors.Email ? errors.Email.message : null}
         id="Email"
         label="Email"
         placeholder="abc@box.com"
         variant="standard"
         margin="normal"
-        {...register("Email", { required: true, pattern: /^\S+@\S+$/i })}
+        {...register("Email", {
+          required: { value: true, message: "Поле обязательно для заполнения" },
+
+          pattern: {
+            value: /^\S+@\S+$/i,
+            message: "Email введен некорректно. Шаблон abc@abc.com",
+          },
+        })}
       />
       <TextField
+        error={errors.Phone}
+        helperText={errors.Phone ? errors.Phone.message : null}
         id="Phone"
         label="Phone"
         placeholder="+1(XXX)XXX-XXXX"
@@ -155,30 +181,50 @@ const App = () => {
         margin="normal"
         type="tel"
         {...register("Phone", {
-          required: true,
+          required: {
+            value: true,
+            message: "Поле обязательно для заполнения",
+          },
           minLength: {
             value: 6,
-            message: "Min value is 6", // JS only: <p>error message</p> TS only support string
-            pattern: /\d+/g,
+            message: "Не менее 6 и не более 14 символов", // JS only: <p>error message</p> TS only support string\
           },
-          maxLength: 14,
+
+          maxLength: 15,
+          pattern: {
+            value: /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/,
+            message: `Телефон не соответсвует шаблону.
+              Шаблоны: +79261234567, 89261234567, 8(926)123-45-67, (495) 123 45 67, 8 927 1234 234 и пр.`,
+          },
         })}
       />
-      <FormControlLabel
-        margin="normal"
-        control={
-          <Checkbox
-            {...register("License", { required: true })}
-            defaultChecked
-          />
-        }
-        sx={{
-          m: "16px 0 8px",
-          color: "black",
-          fontFamily: "Montserrat, sans-serif",
-        }}
-        label={legacyLabel}
-      />
+      <FormControl
+        error={errors.License}
+        helperText={errors.License ? errors.License.message : null}
+        margin="normal">
+        <FormControlLabel
+          control={
+            <Checkbox
+              {...register("License", {
+                required: {
+                  value: true,
+                  message: "Необходимо ваше согласие",
+                },
+              })}
+              defaultChecked
+            />
+          }
+          sx={{
+            m: "16px 0 8px",
+            color: "black",
+            fontFamily: "Montserrat, sans-serif",
+          }}
+          label={legacyLabel}
+        />
+        {errors.License ? (
+          <FormHelperText>{errors.License.message}</FormHelperText>
+        ) : null}
+      </FormControl>
       <Button
         variant="contained"
         type="submit"

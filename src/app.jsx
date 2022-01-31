@@ -14,6 +14,15 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+// import { join, dirname } from "path";
+// import { JSONFileSync, LowSync } from "lowdb";
+// import { fileURLToPath } from "url";
+
+// const __dirname = dirname(fileURLToPath(import.meta.url));
+// console.log(__dirname);
+// const file = join(__dirname, "db.json");
+// const adapter = new JSONFileSync(file);
+// const db = new LowSync(adapter);
 
 const App = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -31,7 +40,17 @@ const App = () => {
 
   const onSubmit = (data) => {
     console.log("SUBMIT", data);
-    localStorage.setItem("user", JSON.stringify(data));
+    // db.users = { data };
+    // db.write();
+    const usersPrev = JSON.parse(localStorage.getItem("users"));
+    localStorage.setItem(
+      "users",
+      JSON.stringify(
+        usersPrev
+          ? [...usersPrev, { ...data, _id: Date.now() }]
+          : [{ ...data, _id: Date.now() }]
+      )
+    );
   };
 
   console.log("ERRORS: ", errors);
